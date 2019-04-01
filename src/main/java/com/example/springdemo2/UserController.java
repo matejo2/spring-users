@@ -20,7 +20,7 @@ public class UserController {
         return "Hello World";
     }
 
-    @GetMapping("/users/{id}")
+    @GetMapping("/users/{id}") //produces = "application/json; charset=UTF-8"
     public Resource<User> getUser(@PathVariable Long id) {
          User user = repository.findById(id).orElseThrow(() -> new UserNotFoundException(id));
 
@@ -34,8 +34,12 @@ public class UserController {
     }
 
     @PostMapping("/users")
-    public User addUser(@RequestBody User user) {
-        return repository.save(user);
+    public Resource<User> addUser(@RequestBody User user) {
+        User newUser = repository.save(user);
+
+        return new Resource<>(newUser,
+                linkTo(methodOn(UserController.class).addUser(user)).withSelfRel());
+        //nur id generieren wenn noch kein wert drinne ist
     }
 
     @PutMapping("/users/{id}")
@@ -49,6 +53,19 @@ public class UserController {
                     user.setId(id);
                     return repository.save(user);
                 });
+
+        // anstatt map:
+        /*
+        *
+        * userToSave = repo.findById(...)
+        *
+        * repo.save(userToSave)
+        *
+        *
+        *
+        *
+        *
+        * */
     }
 
 

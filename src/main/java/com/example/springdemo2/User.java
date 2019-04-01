@@ -1,15 +1,16 @@
 package com.example.springdemo2;
 
-import lombok.Data;
-import lombok.Getter;
-import lombok.Setter;
+import lombok.*;
 
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
+import java.math.BigDecimal;
 
 @Data
 @Entity
+@AllArgsConstructor
+@NoArgsConstructor
 public class User {
 
     @Id
@@ -23,6 +24,6 @@ public class User {
 
     @Getter
     @Setter
-    private int account;
+    private BigDecimal account;
 
 }
