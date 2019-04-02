@@ -26,4 +26,9 @@ public class User {
     @Setter
     private BigDecimal account;
 
+    User(String name, BigDecimal account){
+        setName(name);
+        setAccount(account);
+    }
+
 }
