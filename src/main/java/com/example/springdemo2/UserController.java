@@ -1,7 +1,11 @@
 package com.example.springdemo2;
 
 import org.springframework.hateoas.Resource;
+import org.springframework.hateoas.Resources;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
+import java.util.stream.Collectors;
 
 import static org.springframework.hateoas.mvc.ControllerLinkBuilder.linkTo;
 import static org.springframework.hateoas.mvc.ControllerLinkBuilder.methodOn;
@@ -20,26 +24,32 @@ public class UserController {
         return "Hello World";
     }
 
-    @GetMapping("/users/{id}") //produces = "application/json; charset=UTF-8"
+    @GetMapping("/users/{id}")
     public Resource<User> getUser(@PathVariable Long id) {
          User user = repository.findById(id).orElseThrow(() -> new UserNotFoundException(id));
 
          return new Resource<>(user,
-                 linkTo(methodOn(UserController.class).getUser(id)).withSelfRel());
+                 linkTo(methodOn(UserController.class).getUser(id)).withSelfRel(),
+                 linkTo(methodOn(UserController.class).getAllUsers()).withRel("getAllUsers"));
     }
 
     @GetMapping("/users")
-    public Iterable<User> getAllUsers() {
-        return repository.findAll();
+    public Resources<Resource<User>> getAllUsers(){
+        List<Resource<User>> allUsers =  repository.findAll().stream()
+                .map(user -> new Resource<>(user,
+                        linkTo(methodOn(UserController.class).getUser(user.getId())).withSelfRel(),
+                        linkTo(methodOn(UserController.class).getAllUsers()).withRel("getAllUsers")))
+                .collect(Collectors.toList());
+        return new Resources<>(allUsers,
+                linkTo(methodOn(UserController.class).getAllUsers()).withSelfRel());
     }
+
 
     @PostMapping("/users")
     public Resource<User> addUser(@RequestBody User user) {
         User newUser = repository.save(user);
-
         return new Resource<>(newUser,
                 linkTo(methodOn(UserController.class).addUser(user)).withSelfRel());
-        //nur id generieren wenn noch kein wert drinne ist
     }
 
     @PutMapping("/users/{id}")
@@ -56,16 +66,9 @@ public class UserController {
 
         // anstatt map:
         /*
-        *
         * userToSave = repo.findById(...)
-        *
         * repo.save(userToSave)
-        *
-        *
-        *
-        *
-        *
-        * */
+        */
     }
 
 

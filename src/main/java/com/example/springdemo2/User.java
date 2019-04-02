@@ -7,7 +7,6 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import java.math.BigDecimal;
 
-@Data
 @Entity
 @AllArgsConstructor
 @NoArgsConstructor
@@ -16,6 +15,7 @@ public class User {
     @Id
     @GeneratedValue
     @Getter
+    @Setter
     private Long id;
 
     @Getter
