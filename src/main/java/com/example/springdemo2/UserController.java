@@ -26,16 +26,16 @@ public class UserController {
 
     @GetMapping("/users/{id}")
     public Resource<User> getUser(@PathVariable Long id) {
-         User user = repository.findById(id).orElseThrow(() -> new UserNotFoundException(id));
+        User user = repository.findById(id).orElseThrow(() -> new UserNotFoundException(id));
 
-         return new Resource<>(user,
-                 linkTo(methodOn(UserController.class).getUser(id)).withSelfRel(),
-                 linkTo(methodOn(UserController.class).getAllUsers()).withRel("getAllUsers"));
+        return new Resource<>(user,
+                linkTo(methodOn(UserController.class).getUser(id)).withSelfRel(),
+                linkTo(methodOn(UserController.class).getAllUsers()).withRel("getAllUsers"));
     }
 
     @GetMapping("/users")
-    public Resources<Resource<User>> getAllUsers(){
-        List<Resource<User>> allUsers =  repository.findAll().stream()
+    public Resources<Resource<User>> getAllUsers() {
+        List<Resource<User>> allUsers = repository.findAll().stream()
                 .map(user -> new Resource<>(user,
                         linkTo(methodOn(UserController.class).getUser(user.getId())).withSelfRel(),
                         linkTo(methodOn(UserController.class).getAllUsers()).withRel("getAllUsers")))
@@ -60,20 +60,14 @@ public class UserController {
             return repository.save(changedUser);
         })
                 .orElseGet(() -> {
-                    user.setId(id);
                     return repository.save(user);
                 });
 
-        // anstatt map:
-        /*
-        * userToSave = repo.findById(...)
-        * repo.save(userToSave)
-        */
     }
 
 
     @DeleteMapping("/users/{id}")
-    public String deleteUser(@PathVariable Long id){
+    public String deleteUser(@PathVariable Long id) {
         repository.deleteById(id);
         return "successfully deleted";
     }
